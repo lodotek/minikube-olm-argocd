@@ -1,0 +1,37 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: argocd-install
+  labels:
+    app.kubernetes.io/component: argocd-install
+    app.kubernetes.io/part-of: argocd
+    app.kubernetes.io/managed-by: kustomize
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io
+spec:
+  project: cluster-provision
+
+  # Source of the application manifests
+  source:
+    repoURL: https://github.com/lodotek/minikube-olm-argocd
+    targetRevision: HEAD
+    path: install/argocd
+
+  # Destination cluster and namespace to deploy the application
+  destination:
+    namespace: argocd
+    server: https://kubernetes.default.svc
+
+  # Sync policy
+  syncPolicy:
+    automated:
+      prune: true # Specifies if resources should be pruned during auto-syncing ( false by default ).
+      selfHeal: true # Specifies if partial app sync should be executed when resources are changed only in target Kubernetes cluster and no git change detected ( false by default ).
+    validate: true # Validate resources before applying to k8s, defaults to true.
+
+  # Ignore differences at the specified json pointers
+  ignoreDifferences:
+    - group: apps
+      kind: Deployment
+      jsonPointers:
+        - /spec/replicas

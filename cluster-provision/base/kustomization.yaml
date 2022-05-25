@@ -1,0 +1,4 @@
+namespace: argocd
+resources:
+# - prometheus-operator-ns.yaml
+# - prometheus-operator-app.yaml
