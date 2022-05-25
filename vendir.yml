@@ -1,0 +1,28 @@
+apiVersion: vendir.k14s.io/v1alpha1
+kind: Config
+directories:
+##WIP
+# - path: install/argocd-operator-new
+#   contents:
+#   - path: argocd-operator-new
+#     git:
+#       url: https://github.com/argoproj-labs/argocd-operator
+#       ref: v0.3.0
+#     newRootPath: deploy
+- path: install/olm-crds
+  contents:
+  - path: ./
+    # newRootPath: install
+    githubRelease:
+      # slug for repository (org/repo) (required)
+      slug: operator-framework/operator-lifecycle-manager
+      # use release tag (optional)
+      # optional if tagSelection is specified (available in v0.22.0+)
+      tag: v0.20.0
+      # only download specific assets (optional; v0.12.0+)
+      assetNames: ["*.yaml"]
+      disableAutoChecksumValidation: true
+      # specifies which archive to unpack for contents (optional)
+      # unpackArchive:
+      #   # (required)
+        # path: operator-lifecycle-manager_0.21.2_linux_amd64.tar.gz

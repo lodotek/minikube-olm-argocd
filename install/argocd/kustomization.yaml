@@ -1,0 +1,12 @@
+namespace: argocd
+resources:
+  - argocd-ns.yaml
+  - https://github.com/argoproj/argo-cd/manifests/cluster-install?ref=v2.3.4
+# patchesStrategicMerge:
+#   - argocd-repo-server-deploy-patch.yaml
+#   - argocd-server-deploy-patch.yaml
+## leave this for a custom builder and a kustomize ksops plugin
+# images:
+#   - name: argoproj/argocd:v2.3.4
+#     newName: pmcjury/argocd
+#     newTag: v1.4.2-ksops
