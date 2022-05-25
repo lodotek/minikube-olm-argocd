@@ -9,7 +9,7 @@ Spins up a local Minikube cluster with OLM (Operator Lifecycle Manager) and Argo
 
 ## Order of Operations
 
-- `make mk-init` to initialize the MiniKube cluster and run `vendir sync`
+- `make mk-init` to initialize the MiniKube cluster and vendir in things.
 - `make install`
 
 ## Notes
