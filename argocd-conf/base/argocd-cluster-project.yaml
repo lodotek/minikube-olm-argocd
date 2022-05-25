@@ -2,6 +2,7 @@ apiVersion: argoproj.io/v1alpha1
 kind: AppProject
 metadata:
   name: cluster-resources
+  namespace: argocd
 spec:
   description: Cluster Provision Install select software, operators, namespaces etc. to bootstrap the cluster
   sourceRepos:
