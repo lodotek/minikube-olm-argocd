@@ -2,8 +2,8 @@ KB = kustomize build
 MK = argocd
 LOCAL_DOMAIN = test
 ARGOCD_DEP_NAME = example-argocd
- 
-.PHONY: default omnibus mk-init mk-rm mk-stop mk-addons-list mk-ip mk-argocd-login-password mk-argocd-login mk-argocd-open install install-argocd-cli install-olm install-argocd-operator install-argocd-instance delete help
+OLM_VERSION = v0.20.0
+.PHONY: default omnibus mk-init mk-rm mk-stop mk-addons-list mk-ip mk-argocd-login-password mk-argocd-login mk-argocd-open install install-argocd-cli install-olm install-argocd-operator install-argocd-instance install-argocd-apps delete help
 
 default: help
 
@@ -39,7 +39,7 @@ mk-ip: ## Dispaly minikube ip
 
 mk-argocd-login-password: ## Dispaly the argocd login password deployed to minikube
 	@echo "admin"
-	@kubectl get pods -n argocd -l app.kubernetes.io/name=$(ARGOCD_DEP_NAME)-server -o name | cut -d'/' -f 2
+	@kubectl -n argocd get secret argocd-initial-admin-secret -o jsonpath="{.data.password}" | base64 -d
 
 mk-argocd-login: ## Login to argocd deployed to minikube
 	@argocd login argocd-grpc.test \
@@ -50,7 +50,7 @@ mk-argocd-login: ## Login to argocd deployed to minikube
 mk-argocd-open: mk-argocd-login-password ## Open ArgoCD UI deployed to minikube
 	open http://argocd.test/login
 
-install: install-olm install-argocd-operator install-argocd-instance ## Install all resources olm, argocd operator, argo, etc.
+install: install-olm install-argocd-operator install-argocd-instance install-argocd-apps ## Install all resources olm, argocd operator, argo, etc.
 
 install-argocd-cli: ## Install the argocd cli
 	@echo "#### Installing argocd-cli via homebrew"
@@ -59,23 +59,28 @@ install-argocd-cli: ## Install the argocd cli
 
 install-olm: ## Install operator lifecycle manager
 	@echo "#### Installing operator lifecycle manager (olm) ..."
-	@kubectl create -f ./install/olm-crds
-	@sleep 2
-	@kubectl apply -f ./install/olm-catalog
+	@./olm-install.sh $(OLM_VERSION)
+	# @kubectl create -f ./install/olm-crds
+	# @sleep 2
+	# @kubectl apply -f ./install/olm-catalog
 
 install-argocd-operator: ## Install the argocd operator
 	@echo "#### Installing argocd operator"
 	@echo "#### Checking olm is installed and ready"
 	@kubectl rollout status -w -n olm deployment/olm-operator
 	@kubectl rollout status -w -n olm deployment/catalog-operator
-	@kubectl wait --for=condition=ready --timeout=60s -n olm -l olm.catalogSource=argocd-catalog pod
 	@$(KB) ./install/argocd-operator| kubectl apply -f -
+	# @kubectl wait --for=condition=ready --timeout=60s -n olm -l olm.catalogSource=argocd-catalog pod
 	@sleep 15
 
 install-argocd-instance: ## Install the argocd instances
 	@echo "#### Installing argocd instance via argocd operator"
 	@$(KB) ./install/argocd | kubectl apply -f -
 	@sleep 5
+
+install-argocd-apps: ## Install the argocd instances
+	@echo "#### Installing ArgoCD Apps"
+	@$(KB) ./argocd-conf/overlays | kubectl apply -f -
 
 delete: ## Delete all k8s resources for argocd, the operator, and olm
 	@echo "#### To delete all argocd run the following"
