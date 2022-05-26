@@ -1,0 +1,9 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: cluster-provision
+  namespace: argocd
+spec:
+  # Source of the application manifests
+  source:
+    repoURL: https://github.com/lodotek/minikube-olm-argocd
