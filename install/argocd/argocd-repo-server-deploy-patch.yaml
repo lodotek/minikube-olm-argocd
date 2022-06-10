@@ -1,0 +1,19 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: argocd-repo-server
+spec:
+  template:
+    spec:
+      containers:
+        - name: argocd-repo-server
+          env:
+            - name: "GOOGLE_APPLICATION_CREDENTIALS"
+              value: "/app/config/gcp/key-file.json"
+          volumeMounts:
+            - name: argocd-gcp-creds
+              mountPath: /app/config/gcp
+      volumes:
+        - name: argocd-gcp-creds
+          secret:
+            secretName: argocd-gcp-creds-secrets

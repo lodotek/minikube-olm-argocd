@@ -30,10 +30,10 @@ spec:
   #   defaultPolicy: "role:readonly"
   #   scopes: "[groups]"
   repositories: |
-    - url: https://github.com/pmcjury/argocd-operator-multi-tenant
-    - url: "https://github.com/pmcjury/argocd-example-apps"
+    - url: https://github.com/lodotek/minikube-olm-argocd
+    - url: "https://github.com/argoproj/argocd-example-apps"
   repository.credentials: |
-    - url: https://github.com/pmcjury
+    - url: https://github.com/lodotek
       passwordSecret:
         name: argocd-repositories-secret
         key: password
